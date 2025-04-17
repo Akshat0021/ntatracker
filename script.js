@@ -1,22 +1,38 @@
-async function runTracker() {
-  const consoleDiv = document.getElementById("console");
-  consoleDiv.innerHTML = "⏳ Running tracker...<br>";
+const outputDiv = document.getElementById("output");
+const statusDiv = document.getElementById("status");
+const startBtn = document.getElementById("startBtn");
+const beep = document.getElementById("beep");
 
-  try {
-    const response = await fetch("https://nta-backend.onrender.com/run");
-    const data = await response.json();
+const BACKEND_URL = "https://YOUR-BACKEND-RENDER-URL.onrender.com/logs";
 
-    data.logs.forEach(log => {
-      consoleDiv.innerHTML += log + "<br>";
-    });
+let polling = false;
 
-    if (data.success) {
-      document.getElementById("beep").play();
-      consoleDiv.innerHTML += "<br><strong>✅ PDF FOUND!</strong><br>" + data.url;
-    } else {
-      consoleDiv.innerHTML += "<br>❌ No PDF found.";
-    }
-  } catch (error) {
-    consoleDiv.innerHTML += `<br>🚨 Error: ${error}`;
+startBtn.addEventListener("click", () => {
+  if (!polling) {
+    polling = true;
+    startBtn.textContent = "Tracking...";
+    pollLogs();
   }
+});
+
+function pollLogs() {
+  fetch(BACKEND_URL)
+    .then(res => res.json())
+    .then(data => {
+      outputDiv.innerHTML = data.logs.map(log => `<div>${log}</div>`).join("");
+      outputDiv.scrollTop = outputDiv.scrollHeight;
+      if (data.status === "FOUND") {
+        statusDiv.innerHTML = `<p>🎉 Found PDF: <a href="${data.url}" target="_blank">${data.url}</a></p>`;
+        beep.play();
+        polling = false;
+        startBtn.textContent = "Start Tracking";
+      } else {
+        setTimeout(pollLogs, 2000);
+      }
+    })
+    .catch(err => {
+      outputDiv.innerHTML += `<div style="color:red;">Error fetching logs</div>`;
+      polling = false;
+      startBtn.textContent = "Start Tracking";
+    });
 }
