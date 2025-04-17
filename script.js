@@ -3,7 +3,7 @@ const statusDiv = document.getElementById("status");
 const startBtn = document.getElementById("startBtn");
 const beep = document.getElementById("beep");
 
-const BACKEND_URL = "https://YOUR-BACKEND-RENDER-URL.onrender.com/logs";
+const BACKEND_URL = "https://nta-backend.onrender.com/logs";
 
 let polling = false;
 
