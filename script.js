@@ -3,7 +3,7 @@ async function runTracker() {
   consoleDiv.innerHTML = "⏳ Running tracker...<br>";
 
   try {
-    const response = await fetch("https://YOUR-BACKEND-URL/run");
+    const response = await fetch("https://nta-backend.onrender.com/run");
     const data = await response.json();
 
     data.logs.forEach(log => {
